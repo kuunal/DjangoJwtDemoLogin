@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-AUTH_USER_MODEL = 'authentication.User'
+AUTH_USER_MODEL = 'registration.User'
 INSTALLED_APPS = [
     'registration',
     'rest_framework',
@@ -46,12 +46,13 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES":{
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    },
-    "DEFAULT_PERMISSION_CLASSES":{
-        'rest_framework.permissions.IsAuthenticated',
-    }
+#     "DEFAULT_AUTHENTICATION_CLASSES":{
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     },
+#     "DEFAULT_PERMISSION_CLASSES":{
+#         'rest_framework.permissions.IsAuthenticated',
+#     }
+    'EXCEPTION_HANDLER': 'app.login_exception.custom_exception_handler'
 }
 
 MIDDLEWARE = [
