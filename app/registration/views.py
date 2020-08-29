@@ -3,6 +3,8 @@ from .serializers import RegisterSerializer
 from rest_framework.response import Response
 from rest_framework import generics 
 from app.login_exception import LoginError
+from rest_framework.exceptions import AuthenticationFailed, APIException
+from response_codes import get_response_code
 # Create your views here.
 
 class RegisterView(generics.GenericAPIView):
@@ -11,7 +13,7 @@ class RegisterView(generics.GenericAPIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if not serializer.is_valid():
-            return LoginError({'status':400,'message':serializer.errors})
+            raise LoginError(**{'status':400, 'message':serializer.errors})
         serializer.save()
-        user_data = serializerdata
-        return Response(user_data, status=status.HTTP_201_CREATED)
+        user_data = serializer.data
+        return Response(user_data, status=201)

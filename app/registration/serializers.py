@@ -12,4 +12,5 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate_username(self, username):
         if not username.isalnum():
-            raise LoginError(get_response_code('INVALID_USERNAME'))
+            raise LoginError(**get_response_code('INVALID_USERNAME'))
+        return username
