@@ -29,8 +29,9 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
+AUTH_USER_MODEL = 'authentication.User'
 INSTALLED_APPS = [
+    'registration',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',

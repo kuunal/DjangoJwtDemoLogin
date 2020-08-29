@@ -29,7 +29,7 @@ class UserManager(BaseUserManager):
         if password is None:
             raise LoginError(get_response_code('NULL_PASSWORD'))
 
-        user = self.model(usernmae=username,
+        user = self.model(username=username,
                             email=self.normalize(email))
         user.set_password(password)
         user.is_superuser=True
