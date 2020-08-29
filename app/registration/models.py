@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.model import (AbstractBaseUser, PermissionsMixin, BaseUserManager)
+from django.contrib.auth.models import (AbstractBaseUser, PermissionsMixin, BaseUserManager)
 from app.login_exception import LoginError
 from response_codes import get_response_code
 
