@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import (AbstractBaseUser, PermissionsMixin, BaseUserManager)
 from app.login_exception import LoginError
+from rest_framework_simplejwt.tokens import RefreshToken
 from response_codes import get_response_code
 
 # Create your models here.
@@ -18,6 +19,7 @@ class UserManager(BaseUserManager):
         user = self.model(username=username,
                             email=self.normalize_email(email))
         user.set_password(password)
+        user.is_active = True
         user.save()
         return user
 
@@ -54,5 +56,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def tokens(self):
-        pass
+        token = RefreshToken.for_user(self)
+        return {
+            'refresh':str(token),
+            'access': str(token.access_token)
+        }
 
