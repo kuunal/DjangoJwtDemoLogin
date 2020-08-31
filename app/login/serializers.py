@@ -9,3 +9,8 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'password', 'username']
+
+
+class RefreshTokenSerializer(serializers.Serializer):
+    token = serializers.CharField(max_length=255)
+    
