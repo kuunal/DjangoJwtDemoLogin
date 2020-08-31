@@ -36,6 +36,7 @@ ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'registration.User'
 INSTALLED_APPS = [
     'login',
+    'drf_yasg',
     'registration',
     'rest_framework',
     'django.contrib.admin',
@@ -47,9 +48,9 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-#     "DEFAULT_AUTHENTICATION_CLASSES":{
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     },
+    # "DEFAULT_AUTHENTICATION_CLASSES":{
+    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
+    # },
 #     "DEFAULT_PERMISSION_CLASSES":{
 #         'rest_framework.permissions.IsAuthenticated',
 #     }
