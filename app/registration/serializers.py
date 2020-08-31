@@ -14,3 +14,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not username.isalnum():
             raise LoginError(**get_response_code('INVALID_USERNAME'))
         return username
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)

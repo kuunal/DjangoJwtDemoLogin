@@ -5,6 +5,7 @@ from rest_framework import generics
 from app.login_exception import LoginError
 from rest_framework.exceptions import AuthenticationFailed, APIException
 from response_codes import get_response_code
+from rest_framework_simplejwt.tokens import RefreshToken
 # Create your views here.
 
 class RegisterView(generics.GenericAPIView):
