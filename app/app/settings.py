@@ -31,7 +31,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+JWT_EXPIRATION_TIME = 300
+JWT_REFRESH_EXPIRATION_TIME = 86400
 # Application definition
 AUTH_USER_MODEL = 'registration.User'
 INSTALLED_APPS = [
@@ -127,16 +128,26 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS':{
+        'api_key':{
+            'type':'apikey',
+            'in':'header',
+            'name':'x-token'
+        }
+    }
+}
