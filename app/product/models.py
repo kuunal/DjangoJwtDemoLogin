@@ -4,7 +4,7 @@ class ProductManager():
     def all(page):
         try:
             cursor = connection.cursor()
-            cursor.execute('select id, author, title, image, quantity, price, description from product where id >= %s limit 5', ((int(page)*5)-5,))
+            cursor.execute('select id, author, title, image, quantity, price, description from product where id > %s limit 5', ((int(page)*5)-5,))
             rows = cursor.fetchall()
             objects = []
             if rows:
