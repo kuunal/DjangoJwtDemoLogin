@@ -17,11 +17,10 @@ def caching(func):
         if products:
             products = pickle.loads(products)
             serializer = ProductSerializer(products, many=True)
-            print('from cache')
             return Response(serializer.data)
         else:
             response =  func(request, *args, **kwargs)
-            if response.status == 200:
+            if response.status_code == 200:
                 products = pickle.dumps(response.data)
                 redis_instance.set(page, products)
             return response
@@ -37,7 +36,7 @@ def get_products(request):
         products = Product.objects.all(page)
         if products:
             serializer = ProductSerializer(products, many=True)
-            return Response(serializer.data)
+            return Response(serializer.data, status=200)
         return Response(status=404)
     except KeyError:
         return Response(status=404)

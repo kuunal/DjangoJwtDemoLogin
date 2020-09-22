@@ -12,11 +12,27 @@ from .services import refresh_token_required
 from drf_yasg.utils import swagger_auto_schema
 from app import custom_jwt
 from app import settings
+import datetime
+from _datetime import timedelta
 # Create your views here.
+
+
+
+def cookie(func):
+    def wrapper(obj, request, *args, **kwargs):
+        response = func(obj, request, *args, **kwargs)
+        response.set_cookie(key='refresh-token', value=response.data['refresh'], httponly=True, expires=datetime.datetime.now()+ timedelta(1), samesite='Strict')
+        return response
+
+    return wrapper
+
+
+
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
+    @cookie
     def post(self, request):
         serializer = LoginSerializer(data = request.data)
         if not serializer.is_valid():
@@ -40,8 +56,6 @@ def custom_token_refresh_view(request, user=None, *args, **kwargs):
     token = custom_jwt.generate_custom_token(user, settings.JWT_EXPIRATION_TIME, 'access')
     return Response({'access':token}, status=200)
         
-
-
 
     
 
