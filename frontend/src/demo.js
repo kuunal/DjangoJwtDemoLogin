@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { connect } from "react-redux";
+import { login } from "./acitons/loginAction";
 
-function Demo() {
-  const [token, setToken] = useState("");
+function Demo(props) {
   useEffect(() => {
-    // axios.get("http://localhost:8000/products/?pageno=1",{"headers":{"x-token":"res.data.access"}}).then(res=>console.log(res.data))
-    axios
-      .post(
-        "http://localhost:8000/login/",
-        { email: "kunaldeshmukh2503@gmail.com", password: "Kunal@123" },
-        { withCredentials: true }
-      )
-      .then((res) =>
-        axios
-          .get("http://localhost:8000/products/?pageno=1", {
-            headers: { "x-token": res.data.access },
-          })
-          .then((res) => console.log(res.data))
-      );
+    props.login();
   }, []);
-  return (
-    <div>
-      {token}
-      {/* <button type="submit" onClick={get_products}>PRoducts</button> */}
-      Hello
-    </div>
-  );
+  console.log(props.xtoken);
+  return <div>asdasd{}</div>;
 }
-export default Demo;
+const mapStateToProps = (state) => {
+  return {
+    xtoken: state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    login: () => dispatch(login()),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Demo);
