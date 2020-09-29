@@ -40,6 +40,7 @@ AUTH_USER_MODEL = 'registration.User'
 INSTALLED_APPS = [
     'login',
     'drf_yasg',
+    'corsheaders',
     'registration',
     'rest_framework',
     'django.contrib.admin',
@@ -68,9 +69,30 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'app.middlewares.CacheMiddleware'
+    'corsheaders.middleware.CorsMiddleware',
+    # 'app.middlewares.CacheMiddleware'
 ]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'x-token'
+]
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+#     "https://localhost:8000",
+#     'http://localhost:'
 
+]
+CORS_ALLOW_CREDENTIALS = True
+JWT_SECRET_KEY="secret"
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
