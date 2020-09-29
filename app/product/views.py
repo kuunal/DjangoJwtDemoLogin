@@ -4,8 +4,12 @@ from .serializers import ProductSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Product
+from rest_framework.exceptions import AuthenticationFailed
 from app.redis_setup import get_redis_instance
 import pickle
+import jwt
+from login.views import custom_token_refresh_view
+from app import settings
 # Create your views here.
 
 
@@ -26,7 +30,25 @@ def caching(func):
             return response
     return wrapper
 
+def authenticate(func):
+    def jwt_decode(request):
+        token = request.headers.get('x-token')
+        print(token,"sadsadsadsa")
+        if not token:
+            raise AuthenticationFailed("no token")  
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY)
+            user_email=payload.get('user_id')
+            return func(request)
+        except (jwt.DecodeError) :   
+            return custom_token_refresh_view(request)
+        # except  as indentifier:
+        #     raise AuthenticationFailed("expired")  
+    return jwt_decode 
+
+
 @api_view(('GET',))
+@authenticate
 @caching
 def get_products(request):
     try:
