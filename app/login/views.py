@@ -21,9 +21,8 @@ from _datetime import timedelta
 def cookie(func):
     def wrapper(obj, request, *args, **kwargs):
         response = func(obj, request, *args, **kwargs)
-        response.set_cookie(key='refresh-token', value=response.data['refresh'], httponly=True, expires=datetime.datetime.now()+ timedelta(1), samesite='Strict')
+        response.set_cookie(key='refresh-token', value=response.data['refresh'], httponly=True, expires=datetime.datetime.now()+ timedelta(1), path="/")
         return response
-
     return wrapper
 
 
@@ -49,8 +48,8 @@ class LoginView(generics.GenericAPIView):
         return Response(response, status=200)
 
          
-@swagger_auto_schema(method='post', request_body=RefreshTokenSerializer)
-@api_view(('POST',))
+# @swagger_auto_schema(method='post', request_body=RefreshTokenSerializer)
+# @api_view(('POST',))
 @refresh_token_required
 def custom_token_refresh_view(request, user=None, *args, **kwargs):
     token = custom_jwt.generate_custom_token(user, settings.JWT_EXPIRATION_TIME, 'access')

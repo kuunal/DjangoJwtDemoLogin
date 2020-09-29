@@ -6,7 +6,7 @@ from django.db import connection as cn
 
 def refresh_token_required(func):
     def wrapper(request, user=None, *args, **kwargs):
-        token = request.data.get('token')
+        token = request.headers.get('refresh-token') 
         if not token:
             raise LoginError(**get_response_code('TOKEN_NOT_FOUND'))
         try:
