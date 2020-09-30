@@ -7,8 +7,14 @@ function Demo(props) {
   let [emailError, setEmailError] = useState("");
   let [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
-  const [signInBtn, setSignInBtn] = useState("black");
-  const [signUpBtn, setSignUpBtn] = useState("black");
+  const [signInBtn, setSignInBtn] = useState("gray");
+  const [signUpBtn, setSignUpBtn] = useState("gray");
+  const btnColorOne = "black";
+  const btnColorTwo = "dodgerblue";
+  const [emailInputBorderColor, setEmailInputBorderColor] = useState("black");
+  const [passwordInputBorderColor, setPasswordInputBorderColor] = useState(
+    "black"
+  );
 
   const setBtnStyle = (obj, color) => obj(color);
 
@@ -22,17 +28,19 @@ function Demo(props) {
       setEmail(emailInput);
       setEmailError("");
     } else {
-      setEmailError("Invalid");
+      setEmail("");
+      setEmailError("No such email id");
     }
   };
 
   let validatePassword = (e) => {
-    let password = e.target.value;
-    if (password.length > 8) {
-      setPassword(password);
+    let passwordInput = e.target.value;
+    if (passwordInput.length > 8) {
+      setPassword(passwordInput);
       setPasswordError("");
     } else {
-      setPasswordError("Invalid");
+      setPassword("");
+      setPasswordError("Minimum length required is 8");
     }
   };
 
@@ -45,6 +53,7 @@ function Demo(props) {
     borderBottom: ".3px solid black",
     height: "2em",
     borderRadius: "5px",
+    cursor: "pointer",
   };
 
   const signUpBtnStyle = {
@@ -52,11 +61,26 @@ function Demo(props) {
     background: signUpBtn,
   };
 
-  const inputStyle = {
+  const emailInputStyle = {
     border: "none",
+    width: "40%",
     outline: "none",
-    borderBottom: "1px solid black",
+    borderBottom: `1px solid ${emailInputBorderColor}`,
     marginLeft: "1em",
+  };
+
+  const setEmailFocus = (obj, color) => obj(color);
+
+  const passwordInputStyle = {
+    ...emailInputStyle,
+    borderBottom: `1px solid ${passwordInputBorderColor}`,
+  };
+
+  const requestLogin = () => {
+    if (email !== "" && password !== "") {
+      // props.login({ email, password });
+      console.log({ email, password });
+    }
   };
 
   const formSubmit = (e) => {
@@ -83,7 +107,8 @@ function Demo(props) {
           name="email"
           placeholder="abc@gmial.com"
           onChange={validateEmail}
-          style={inputStyle}
+          style={emailInputStyle}
+          onFocus={() => setEmailFocus(setEmailInputBorderColor, "blue")}
         />
         <br />
         <p style={{ color: "red" }}>{emailError}</p>
@@ -94,7 +119,8 @@ function Demo(props) {
           name="password"
           onChange={validatePassword}
           placeholder="********"
-          style={inputStyle}
+          style={passwordInputStyle}
+          onFocus={() => setEmailFocus(setPasswordInputBorderColor, "blue")}
         />
         <br />
         <p style={{ color: "red" }}>{passwordError}</p>
@@ -102,16 +128,17 @@ function Demo(props) {
         <button
           type="submit"
           style={signInBtnStyle}
-          onMouseEnter={() => setBtnStyle(setSignInBtn, "blue")}
-          onMouseOut={() => setBtnStyle(setSignInBtn, "black")}
+          onMouseEnter={() => setBtnStyle(setSignInBtn, btnColorTwo)}
+          onMouseOut={() => setBtnStyle(setSignInBtn, btnColorOne)}
+          onClick={requestLogin}
         >
           SignIn
         </button>
         <button
           type="submit"
           style={signUpBtnStyle}
-          onMouseEnter={() => setBtnStyle(setSignUpBtn, "blue")}
-          onMouseOut={() => setBtnStyle(setSignUpBtn, "black")}
+          onMouseEnter={() => setBtnStyle(setSignUpBtn, btnColorTwo)}
+          onMouseOut={() => setBtnStyle(setSignUpBtn, btnColorOne)}
         >
           SignUp
         </button>
@@ -121,17 +148,15 @@ function Demo(props) {
   );
 }
 
-const loginContainer = {
-  // marginTop: "30%",
-  // background: "black",
-};
+const loginContainer = {};
 
 const loginFormStyle = {
-  margin: "10% auto",
+  margin: "8% auto",
   border: "1px solid gray",
-  boxShadow: "1px 1px 1px 1px black",
+  boxShadow: "1px 1px 1px 1px gray",
+  borderRadius: "2px  ",
   width: "30%",
-  height: "350px",
+  height: "100%",
 };
 
 const mapStateToProps = (state) => {
