@@ -12,7 +12,7 @@ const initialState = {
   isLoading: false,
 };
 
-export const rootreducer = (state = initialState, action) => {
+export const loginReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN_INPROCESS:
       return {
