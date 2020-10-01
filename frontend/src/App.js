@@ -1,5 +1,6 @@
 import React from "react";
-import LoginComponent from "./Login";
+import LoginComponent from "./components/Login";
+import ProductsComponent from "./components/products";
 import "./App.css";
 import { store } from "./store/store";
 import { Provider } from "react-redux";
@@ -11,7 +12,7 @@ function App() {
       <Router>
         <div className="App" style={container}>
           <Route path="/login" component={LoginComponent} />
-          <Route path="/products" />
+          <Route path="/products" component={ProductsComponent} />
         </div>
       </Router>
     </Provider>
