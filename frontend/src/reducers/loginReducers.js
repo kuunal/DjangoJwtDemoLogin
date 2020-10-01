@@ -1,5 +1,8 @@
 const initialState = {
-  response: "",
+  response: {
+    message: "",
+    statusCode: "",
+  },
   isLoading: false,
 };
 
@@ -12,12 +15,18 @@ export const rootreducer = (state = initialState, action) => {
       };
     case "LOGIN_SUCCESS":
       return {
-        response: action.payload,
+        response: {
+          message: action.payload.message,
+          statusCode: action.payload.statusCode,
+        },
         isLoading: false,
       };
-    case "LOGIN_SUCCESS":
+    case "LOGIN_FAILED":
       return {
-        response: action.error,
+        response: {
+          message: action.error.message,
+          statusCode: action.error.statusCode,
+        },
         isLoading: false,
       };
     default:
