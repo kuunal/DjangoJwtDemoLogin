@@ -23,28 +23,29 @@ def caching(func):
             serializer = ProductSerializer(products, many=True)
             return Response(serializer.data)
         else:
-            response =  func(request, *args, **kwargs)
+            response = func(request, *args, **kwargs)
             if response.status_code == 200:
                 products = pickle.dumps(response.data)
                 redis_instance.set(page, products)
             return response
     return wrapper
 
+
 def authenticate(func):
     def jwt_decode(request):
-        token = request.headers.get('x-token')
-        print(token,"sadsadsadsa")
+        token = request.headers.get('x_token')
+        print(token, "sadsadsadsa")
         if not token:
-            raise AuthenticationFailed("no token")  
+            raise AuthenticationFailed("no token")
         try:
             payload = jwt.decode(token, settings.SECRET_KEY)
-            user_email=payload.get('user_id')
+            user_email = payload.get('user_id')
             return func(request)
-        except (jwt.DecodeError) :   
+        except (jwt.DecodeError):
             return custom_token_refresh_view(request)
         # except  as indentifier:
-        #     raise AuthenticationFailed("expired")  
-    return jwt_decode 
+        #     raise AuthenticationFailed("expired")
+    return jwt_decode
 
 
 @api_view(('GET',))
@@ -62,5 +63,3 @@ def get_products(request):
         return Response(status=404)
     except KeyError:
         return Response(status=404)
-
-
