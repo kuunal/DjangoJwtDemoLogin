@@ -1,0 +1,3 @@
+export const REQUESTING_TOKEN = "REQUESTING_TOKEN";
+export const GET_TOKEN = "GET_TOKEN";
+export const GET_TOKEN_FAILED = "GET_TOKEN_FAILED";
