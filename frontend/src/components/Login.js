@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { login } from "./actions/loginAction";
+import { login } from "../actions/loginAction";
 import { Redirect } from "react-router-dom";
 
 function LoginComponent(props) {
@@ -169,8 +169,8 @@ const loginFormStyle = {
 
 const mapStateToProps = (state) => {
   return {
-    statusCode: state.response.statusCode,
-    xtoken: state.response.message,
+    statusCode: state.login.response.statusCode,
+    xtoken: state.login.response.message,
   };
 };
 
