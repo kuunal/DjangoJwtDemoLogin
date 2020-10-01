@@ -18,8 +18,8 @@ import environ
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
 env = environ.Env(
-# set casting, default value
-DEBUG=(bool, False)
+    # set casting, default value
+    DEBUG=(bool, False)
 )
 # reading .env file
 environ.Env.read_env()
@@ -55,9 +55,9 @@ REST_FRAMEWORK = {
     # "DEFAULT_AUTHENTICATION_CLASSES":{
     #     'rest_framework_simplejwt.authentication.JWTAuthentication',
     # },
-#     "DEFAULT_PERMISSION_CLASSES":{
-#         'rest_framework.permissions.IsAuthenticated',
-#     }
+    #     "DEFAULT_PERMISSION_CLASSES":{
+    #         'rest_framework.permissions.IsAuthenticated',
+    #     }
     'EXCEPTION_HANDLER': 'app.login_exception.custom_exception_handler'
 }
 
@@ -82,17 +82,18 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'x-token'
+    'x-token',
+    'x_token'
 ]
 # CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
-#     "https://localhost:8000",
-#     'http://localhost:'
+    #     "https://localhost:8000",
+    #     'http://localhost:'
 
 ]
 CORS_ALLOW_CREDENTIALS = True
-JWT_SECRET_KEY="secret"
+JWT_SECRET_KEY = "secret"
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
@@ -168,11 +169,15 @@ USE_TZ = False
 STATIC_URL = '/static/'
 
 SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS':{
-        'api_key':{
-            'type':'apikey',
-            'in':'header',
-            'name':'x-token'
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'x-token'
+        }, 'api_key1': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'refresh-token'
         }
     }
 }
