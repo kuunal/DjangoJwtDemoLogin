@@ -1,3 +1,9 @@
+import {
+  LOGIN_FAILED,
+  LOGIN_SUCCESS,
+  LOGIN_INPROCESS,
+} from "../actiontypes/logintypes";
+
 const initialState = {
   response: {
     message: "",
@@ -8,12 +14,12 @@ const initialState = {
 
 export const rootreducer = (state = initialState, action) => {
   switch (action.type) {
-    case "LOGIN_INPROCESS":
+    case LOGIN_INPROCESS:
       return {
         ...state,
         isLoading: true,
       };
-    case "LOGIN_SUCCESS":
+    case LOGIN_SUCCESS:
       return {
         response: {
           message: action.payload.message,
@@ -21,7 +27,7 @@ export const rootreducer = (state = initialState, action) => {
         },
         isLoading: false,
       };
-    case "LOGIN_FAILED":
+    case LOGIN_FAILED:
       return {
         response: {
           message: action.error.message,
