@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { login } from "./acitons/loginAction";
+import { login } from "./actions/loginAction";
 import { Redirect } from "react-router-dom";
 
 function LoginComponent(props) {
