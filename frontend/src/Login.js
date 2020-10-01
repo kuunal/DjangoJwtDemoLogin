@@ -87,18 +87,12 @@ function LoginComponent(props) {
     if (props.statusCode === 200) {
       return <Redirect to="products/" />;
     }
-    //   // alert("Invalid Id or Password");
-    //   // props.statusCode && setPasswordError("Invalid Id or Pass");
-    // }
   };
 
   const formSubmit = (e) => {
     e.preventDefault();
-    console.log(email, password);
   };
-  // useEffect(() => {
-  //   cb();
-  // }, [props.xtoken]);
+
   return (
     <form
       id="LoginForm"

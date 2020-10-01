@@ -35,15 +35,18 @@ export const LoginFailed = (message, statusCode) => {
 };
 
 export const login = (data) => {
-  console.log(data);
   return (dispatch) => {
     dispatch(LoginInProcess);
     axios
       .post("http://localhost:8000/login/", data, { withCredentials: true })
       .then((res) => dispatch(LoginSuccess(res.data.access, res.status)))
-      .catch((err) =>
-        // dispatch(LoginFailed(err.response.data, err.response.data.status_code))
-        console.log(err)
+      .catch(
+        (err) => {
+          dispatch(
+            LoginFailed(err.response.data, err.response.data.status_code)
+          );
+        }
+        // console.log(err.response.data)
       );
   };
 };
