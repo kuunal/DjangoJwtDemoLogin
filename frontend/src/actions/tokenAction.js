@@ -34,8 +34,8 @@ export const requestToken = (refreshTokenURI) => {
     axios
       .get(refreshTokenURI, { withCredentials: true })
       .then((res) => dispatch(getToken(res.data.access, res.data.status_codes)))
-      .catch((err) =>
-        dispatch(getTokenFailed("invalid", err.response.data.status_code))
-      );
+      .catch((err) => {
+        dispatch(getTokenFailed("invalid", err.response.data.status_code));
+      });
   };
 };

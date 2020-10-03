@@ -30,8 +30,8 @@ export const tokenReducer = (state = initialState, action) => {
     case GET_TOKEN_FAILED:
       return {
         response: {
-          message: action.error.message,
-          statusCode: action.error.statusCode,
+          message: action.payload.message,
+          statusCode: action.payload.statusCode,
         },
         isLoading: false,
       };
