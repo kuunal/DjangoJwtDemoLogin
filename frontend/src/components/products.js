@@ -3,40 +3,34 @@ import { requestToken } from "../actions/tokenAction";
 import { connect } from "react-redux";
 import axios from "axios";
 import Headers from "./headers";
-import { Grid } from "@material-ui/core";
+import { Grid, makeStyles } from "@material-ui/core";
 import Item from "./item.js";
 
 const refreshTokenURI = process.env.REACT_APP_BACKENDURI + "login/refresh/";
+const useStyle = makeStyles({
+  gridContainer: {
+    paddingLeft: "100px",
+    paddingRight: "100px",
+  },
+});
+
+const gridStyle = {
+  width: 230,
+  height: 300,
+  marginBottom: "3%",
+};
 
 function ProductsComponent({ loginToken, newAccessToken, requestToken }) {
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState(null);
   const productURI = process.env.REACT_APP_BACKENDURI + "products/?pageno=1";
 
+  const classes = useStyle();
   useEffect(() => {
-    // getAccessToken()
-    //   .then((res) => getProducts())
-    //   .catch(console.log("Please login first"));
-    if (newAccessToken === "")
-      // setToken(newAccessToken)
-      requestToken(refreshTokenURI);
-    // console.log("sadsadsa");
+    if (newAccessToken === "") requestToken(refreshTokenURI);
     else getProducts();
   }, [newAccessToken]);
 
-  const getAccessToken = () => {
-    return new Promise((resolve, reject) => {
-      if (
-        loginToken === undefined ||
-        loginToken === "" ||
-        newAccessToken == ""
-      ) {
-        requestToken(refreshTokenURI);
-        if (newAccessToken) resolve("Generated new access token");
-        else reject("Failed to generate response token");
-      }
-    });
-  };
   const getProducts = () => {
     axios
       .get(
@@ -49,16 +43,24 @@ function ProductsComponent({ loginToken, newAccessToken, requestToken }) {
   };
   return (
     <Grid container direction="column">
-      {/* {newAccessToken && getProducts()} */}
-      {console.log(newAccessToken)}
       <Grid item>
         <Headers />
       </Grid>
-      <Grid item>
+      {console.log(products.len)}
+      <Grid
+        item
+        container
+        justify="center"
+        spacing="4"
+        className={classes.gridContainer}
+      >
         {products.map((item, index) => (
-          <Item item={item} key={index} />
+          <Grid item style={gridStyle}>
+            <Item item={item} key={index} />
+          </Grid>
         ))}
       </Grid>
+      <Grid item>Pagination</Grid>
     </Grid>
   );
 }
