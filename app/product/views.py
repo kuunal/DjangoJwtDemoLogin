@@ -32,19 +32,14 @@ def caching(func):
 
 
 def authenticate(func):
-    def jwt_decode(request):
+    def jwt_decode(request, *args, **kwargs):
         token = request.headers.get('x_token')
-        print(token, "sadsadsadsa")
-        if not token:
-            raise AuthenticationFailed("no token")
         try:
             payload = jwt.decode(token, settings.SECRET_KEY)
             user_email = payload.get('user_id')
             return func(request)
-        except (jwt.DecodeError):
-            return custom_token_refresh_view(request)
-        # except  as indentifier:
-        #     raise AuthenticationFailed("expired")
+        except (jwt.DecodeError, jwt.ExpiredSignatureError):
+            return custom_token_refresh_view(request._request, *args, **kwargs)
     return jwt_decode
 
 
