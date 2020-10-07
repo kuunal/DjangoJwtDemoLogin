@@ -45,16 +45,29 @@ def authenticate(func):
 
 @api_view(('GET',))
 @authenticate
-@caching
+# @caching
 def get_products(request):
     try:
         redis_instance = get_redis_instance()
         page = request.GET['pageno']
         cursor = cn.cursor()
         products = Product.objects.all(page)
+        total_page = products[0].total_products//8
         if products:
             serializer = ProductSerializer(products, many=True)
-            return Response(serializer.data, status=200)
+            response = getPaginationResponse(
+                serializer.data, total_page, page)
+            return Response(response, status=200)
         return Response(status=404)
     except KeyError:
         return Response(status=404)
+
+
+def getPaginationResponse(products, total_page, current_page, start_page=1):
+    next_page = ""
+    prev_page = ""
+    if int(current_page) < total_page:
+        next_page = f'{settings.PRODUCT_API}{str(int(current_page)+1)}'
+    if int(current_page) > start_page:
+        prev_page = settings.PRODUCT_API+str(int(current_page)-1)
+    return {"products": products, "next_page": next_page.replace(" ", ""), "prev_page": prev_page.replace(" ", "")}
