@@ -1,4 +1,5 @@
 from django.db import models, connection
+import math
 
 
 class ProductManager():
@@ -8,7 +9,7 @@ class ProductManager():
         try:
             cursor = connection.cursor()
             cursor.execute(
-                'select id, author, title, image, quantity, price, description, (select count(id) from product) as length from product where id > %s limit %s', ((int(PAGINATOR_ITEMS)*8)-8, PAGINATOR_ITEMS))
+                'select id, author, title, image, quantity, price, description, (select count(id) from product) as length from product where id > %s limit %s', ((int(page)*PAGINATOR_ITEMS)-PAGINATOR_ITEMS, PAGINATOR_ITEMS))
             rows = cursor.fetchall()
             objects = []
             if rows:
