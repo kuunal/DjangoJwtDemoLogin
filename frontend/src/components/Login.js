@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, a } from "react";
 import { connect } from "react-redux";
 import { login } from "../actions/loginAction";
 import { Redirect } from "react-router-dom";
+import { Alert } from "@material-ui/lab";
 
 function LoginComponent(props) {
   const [email, setEmail] = useState("");
@@ -30,7 +31,7 @@ function LoginComponent(props) {
       setEmailError("");
     } else {
       setEmail("");
-      setEmailError("No such email id");
+      setEmailError("Please enter valid email!");
     }
   };
 
@@ -86,6 +87,12 @@ function LoginComponent(props) {
   const cb = () => {
     if (props.statusCode === 200) {
       return <Redirect to="products/" />;
+    } else if (props.statusCode === 401) {
+      return (
+        <Alert variant="filled" severity="error">
+          Please provide valid details
+        </Alert>
+      );
     }
   };
 
@@ -117,7 +124,7 @@ function LoginComponent(props) {
           }
         />
         <br />
-        <p style={{ color: "red" }}>{emailError}</p>
+        {emailError ? <Alert severity="error">{emailError}</Alert> : null}
         <br />
         <label for="password">Password :</label>
         <input
@@ -131,7 +138,10 @@ function LoginComponent(props) {
           }
         />
         <br />
-        <p style={{ color: "red" }}>{passwordError}</p>
+        {passwordError ? (
+          <Alert severity="warning">{passwordError}</Alert>
+        ) : null}
+
         <br />
         <button
           type="submit"
