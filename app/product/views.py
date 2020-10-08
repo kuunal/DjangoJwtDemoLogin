@@ -8,6 +8,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from app.redis_setup import get_redis_instance
 import pickle
 import jwt
+import math
 from login.views import custom_token_refresh_view
 from app import settings
 # Create your views here.
@@ -48,26 +49,25 @@ def authenticate(func):
 # @caching
 def get_products(request):
     try:
-        redis_instance = get_redis_instance()
         page = request.GET['pageno']
-        cursor = cn.cursor()
         products = Product.objects.all(page)
-        total_page = products[0].total_products//8
+        total_products = products[0].total_products
+        total_page = math.ceil(total_products/8)
         if products:
             serializer = ProductSerializer(products, many=True)
             response = getPaginationResponse(
-                serializer.data, total_page, page)
+                serializer.data, total_page, page, total_products)
             return Response(response, status=200)
         return Response(status=404)
     except KeyError:
         return Response(status=404)
 
 
-def getPaginationResponse(products, total_page, current_page, start_page=1):
+def getPaginationResponse(products, total_page, current_page, total_products, start_page=1):
     next_page = ""
     prev_page = ""
     if int(current_page) < total_page:
         next_page = f'{settings.PRODUCT_API}{str(int(current_page)+1)}'
     if int(current_page) > start_page:
         prev_page = settings.PRODUCT_API+str(int(current_page)-1)
-    return {"products": products, "next_page": next_page.replace(" ", ""), "prev_page": prev_page.replace(" ", "")}
+    return {"products": products, "next_page": next_page.replace(" ", ""), "prev_page": prev_page.replace(" ", ""), "total_page": total_page, "total_products": total_products}
