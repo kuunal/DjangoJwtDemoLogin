@@ -9,4 +9,3 @@ class ProductSerializer(serializers.Serializer):
     quantity = serializers.IntegerField()
     price = serializers.IntegerField()
     description = serializers.CharField(max_length=255)
-    # total_products = serializers.IntegerField()
