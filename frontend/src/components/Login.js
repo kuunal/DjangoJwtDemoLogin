@@ -18,8 +18,10 @@ function LoginComponent(props) {
     "black"
   );
 
+  // Changing color of button on hover
   const setBtnStyle = (obj, color) => obj(color);
 
+  // Email validation
   const validateEmail = (e) => {
     let emailInput = e.target.value;
     if (
@@ -35,6 +37,7 @@ function LoginComponent(props) {
     }
   };
 
+  // Password validation
   let validatePassword = (e) => {
     let passwordInput = e.target.value;
     if (passwordInput.length > 8) {
@@ -78,13 +81,15 @@ function LoginComponent(props) {
     borderBottom: `1px solid ${passwordInputBorderColor}`,
   };
 
+  // Submitting form and requesting for login
   const requestLogin = () => {
     if (email !== "" && password !== "") {
       props.login({ email, password });
     }
   };
 
-  const cb = () => {
+  // If login successful redirect else show error message
+  const verifyLogin = () => {
     if (props.statusCode === 200) {
       return <Redirect to="products/" />;
     } else if (props.statusCode === 401) {
@@ -107,7 +112,7 @@ function LoginComponent(props) {
       onSubmit={formSubmit}
       style={loginFormStyle}
     >
-      {cb()}
+      {verifyLogin()}
       <div style={loginContainer}>
         <h1 style={{ marginBottom: "1.5em" }}>Login page</h1>
         <label for="email" style={{ marginRight: "12px" }}>

@@ -1,6 +1,6 @@
 import React from "react";
 import LoginComponent from "./components/Login";
-import ProductsComponent from "./components/products";
+import ProductsComponent from "./components/products/products";
 import "./App.css";
 import { store } from "./store/store";
 import { Provider } from "react-redux";
@@ -18,7 +18,5 @@ function App() {
     </Provider>
   );
 }
-const container = {
-  // width: "100%",
-};
+const container = {};
 export default App;
