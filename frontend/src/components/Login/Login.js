@@ -1,6 +1,6 @@
 import React, { useState, a } from "react";
 import { connect } from "react-redux";
-import { login } from "../actions/loginAction";
+import { login } from "../../actions/loginAction";
 import { Redirect } from "react-router-dom";
 import { Alert } from "@material-ui/lab";
 

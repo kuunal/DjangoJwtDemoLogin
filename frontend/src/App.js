@@ -1,5 +1,5 @@
 import React from "react";
-import LoginComponent from "./components/Login";
+import LoginComponent from "./components/Login/Login";
 import ProductsComponent from "./components/products/products";
 import "./App.css";
 import { store } from "./store/store";
