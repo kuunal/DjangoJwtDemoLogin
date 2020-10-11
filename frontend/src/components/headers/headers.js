@@ -18,7 +18,7 @@ export default function Headers() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" color="secondary">
       <Toolbar>
         <Grid
           container
@@ -27,7 +27,7 @@ export default function Headers() {
           style={isXSWidth ? { marginBottom: "10%" } : {}}
         >
           <Grid item container style={{ width: "80%" }}>
-            <Grid lg={1} xl={1}></Grid>
+            <Grid item lg={1} xl={1}></Grid>
             <Grid item>
               <Logo />
             </Grid>
