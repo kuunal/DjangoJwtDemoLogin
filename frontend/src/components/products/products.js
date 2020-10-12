@@ -21,15 +21,13 @@ const bookStoreURI = process.env.REACT_APP_BOOKSTOREURI+"cart/";
 
 function ProductsComponent({ loginToken, newAccessToken, statusCode, requestToken, requestCart }) {
   const [products, setProducts] = useState([]);
-  const [token, setToken] = useState(null);
   const [pageNo, setPageNo] = useState(window.sessionStorage.getItem("pageNo")?window.sessionStorage.getItem("pageNo"):"1");
   const productURI =
     process.env.REACT_APP_BACKENDURI + "products/";
-  const [nextPage, setNextPage] = useState("");
-  const [prevPage, setPrevPage] = useState("");
+  const [ lastItemValue, setLastItemValue ] = useState(0)
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
-  const [ dropDownValue, setDropDownValue ] = useState("author")
+  const [ dropDownValue, setDropDownValue ] = useState(window.sessionStorage.getItem("sortby")?window.sessionStorage.getItem("sortby"):"id")
   const theme = useTheme();
   const xsWidth = useMediaQuery(theme.breakpoints.down("xs"));
   const useStyle = makeStyles({
@@ -57,22 +55,22 @@ function ProductsComponent({ loginToken, newAccessToken, statusCode, requestToke
     axios
       .get(
         productURI,
-        {params:{"pageno": pageNo, "sortby": dropDownValue},
+        {params:{"pageno": pageNo, "sortby": dropDownValue, "last_item_info":lastItemValue, 'itemCount':12},
         headers: { "x-token": newAccessToken } },
         { withCredentials: true }
       )
       .then((res) => {
         setProducts([...res.data.products]);
-        // setNextPage(res.data.next_page);
-        // setPrevPage(res.data.prev_page);
+        setLastItemValue(res.data.products[res.data.products.length - 1][dropDownValue])
         setTotalPage(res.data.total_page);
         setTotalProducts(res.data.total_products);
-        console.log(res.data.total_products);
       })
+
       .catch((res) => console.log(res.response));
   };
 
   const handleChange = (event, value) => {
+    (value - dropDownValue !== 1) && setLastItemValue(null)
     setPageNo(value);
     window.sessionStorage.setItem("pageNo",value);
   };
@@ -85,7 +83,11 @@ function ProductsComponent({ loginToken, newAccessToken, statusCode, requestToke
   }
 
   const dropDownOnClickHandler = (e)=>{
+    sessionStorage.setItem("pageNo", 1)
+    setPageNo(1)
     setDropDownValue(e.target.value)
+    sessionStorage.setItem("sortby", e.target.value)
+    setLastItemValue((e.target.value==="id" && e.target.value==="price") ? 0 : "")
   }
 
   return (
@@ -109,12 +111,14 @@ function ProductsComponent({ loginToken, newAccessToken, statusCode, requestToke
             justify="space-between"
             style={{ margin: "auto 5%" }}
           >
+            {console.log(lastItemValue, dropDownValue)}
             <Typography variant="h6">
               Book
               <sub style={{ fontSize: ".5em" }}>({totalProducts} items)</sub>
             </Typography>
             <Grid item>
-              <Dropdown clickHandler={dropDownOnClickHandler}/>
+              {console.log(dropDownValue)}
+              <Dropdown clickHandler={dropDownOnClickHandler} dropDownValue={dropDownValue && dropDownValue!=="id"?dropDownValue:"relevance"}/>
             </Grid>
           </Grid>
         </Grid>
