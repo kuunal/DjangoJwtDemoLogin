@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { requestToken } from "../../actions/tokenAction";
+import { requestCart } from "../../actions/cartAction";
+import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import axios from "axios";
 import Headers from "../headers/headers";
@@ -12,19 +14,22 @@ import {
 } from "@material-ui/core";
 import Item from "./item.js";
 import Page from "./page";
+import Dropdown from './dropdown'
 
 const refreshTokenURI = process.env.REACT_APP_BACKENDURI + "login/refresh/";
+const bookStoreURI = process.env.REACT_APP_BOOKSTOREURI+"cart/";
 
-function ProductsComponent({ loginToken, newAccessToken, requestToken }) {
+function ProductsComponent({ loginToken, newAccessToken, statusCode, requestToken, requestCart }) {
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState(null);
-  const [pageNo, setPageNo] = useState("1");
+  const [pageNo, setPageNo] = useState(window.sessionStorage.getItem("pageNo")?window.sessionStorage.getItem("pageNo"):"1");
   const productURI =
-    process.env.REACT_APP_BACKENDURI + "products/?pageno=" + pageNo;
+    process.env.REACT_APP_BACKENDURI + "products/";
   const [nextPage, setNextPage] = useState("");
   const [prevPage, setPrevPage] = useState("");
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
+  const [ dropDownValue, setDropDownValue ] = useState("author")
   const theme = useTheme();
   const xsWidth = useMediaQuery(theme.breakpoints.down("xs"));
   const useStyle = makeStyles({
@@ -42,32 +47,50 @@ function ProductsComponent({ loginToken, newAccessToken, requestToken }) {
 
   useEffect(() => {
     if (newAccessToken === "") requestToken(refreshTokenURI);
-    else getProducts();
-  }, [newAccessToken, pageNo]);
+    else {
+      getProducts();
+      loginToken ? requestCart(loginToken, bookStoreURI) : requestCart(newAccessToken, bookStoreURI)
+    }
+  }, [newAccessToken, pageNo, dropDownValue]);
 
   const getProducts = () => {
     axios
       .get(
         productURI,
-        { headers: { "x-token": newAccessToken } },
+        {params:{"pageno": pageNo, "sortby": dropDownValue},
+        headers: { "x-token": newAccessToken } },
         { withCredentials: true }
       )
       .then((res) => {
         setProducts([...res.data.products]);
-        setNextPage(res.data.next_page);
-        setPrevPage(res.data.prev_page);
+        // setNextPage(res.data.next_page);
+        // setPrevPage(res.data.prev_page);
         setTotalPage(res.data.total_page);
         setTotalProducts(res.data.total_products);
+        console.log(res.data.total_products);
       })
       .catch((res) => console.log(res.response));
   };
 
   const handleChange = (event, value) => {
     setPageNo(value);
+    window.sessionStorage.setItem("pageNo",value);
   };
+
+  const isLoggedIn = () =>{
+
+    if (statusCode === 401){
+      return <Redirect to="login/" />
+    }
+  }
+
+  const dropDownOnClickHandler = (e)=>{
+    setDropDownValue(e.target.value)
+  }
 
   return (
     <Grid container direction="column">
+      {isLoggedIn()}
       <Grid item>
         <Headers />
       </Grid>
@@ -75,7 +98,7 @@ function ProductsComponent({ loginToken, newAccessToken, requestToken }) {
         item
         container
         justify="center"
-        spacing="4"
+        spacing={4}
         className={classes.gridContainer}
       >
         <Grid item container>
@@ -91,23 +114,18 @@ function ProductsComponent({ loginToken, newAccessToken, requestToken }) {
               <sub style={{ fontSize: ".5em" }}>({totalProducts} items)</sub>
             </Typography>
             <Grid item>
-              <select>
-                <option>Relevance</option>
-                <option>Price</option>
-                <option>Author</option>
-                <option>Title</option>
-              </select>
+              <Dropdown clickHandler={dropDownOnClickHandler}/>
             </Grid>
           </Grid>
         </Grid>
         {products.map((item, index) => (
           <Grid item style={gridStyle}>
-            <Item item={item} key={index} />
+            <Item item={item} key={item.id} />
           </Grid>
         ))}
         {products && (
           <Grid item container justify="center">
-            <Page handleChange={handleChange} totalPage={totalPage} />
+            <Page handleChange={handleChange} page={pageNo} totalPage={totalPage} />
           </Grid>
         )}
       </Grid>
@@ -119,11 +137,13 @@ const mapStateToProps = (state) => {
   return {
     loginToken: state.login.response.message,
     newAccessToken: state.token.response.message,
+    statusCode: state.token.response.statusCode 
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
   requestToken: (refreshTokenURI) => dispatch(requestToken(refreshTokenURI)),
+  requestCart: (token, bookStoreURI) => dispatch(requestCart(token, bookStoreURI))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductsComponent);
