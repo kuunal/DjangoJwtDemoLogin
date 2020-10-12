@@ -50,9 +50,12 @@ def authenticate(func):
 def get_products(request):
     try:
         page = request.GET['pageno']
-        products = Product.objects.all(page)
-        total_products = products[0].total_products
-        total_page = math.ceil(total_products/8)
+        try:
+            sortby = request.GET['sortby']
+        except KeyError:
+            sortby = "id"
+        [products, total_products] = Product.objects.all(page, sortby)
+        total_page = math.ceil(total_products[0]/8)
         if products:
             serializer = ProductSerializer(products, many=True)
             response = getPaginationResponse(
@@ -71,3 +74,7 @@ def getPaginationResponse(products, total_page, current_page, total_products, st
     if int(current_page) > start_page:
         prev_page = settings.PRODUCT_API+str(int(current_page)-1)
     return {"products": products, "next_page": next_page.replace(" ", ""), "prev_page": prev_page.replace(" ", ""), "total_page": total_page, "total_products": total_products}
+
+
+def paginate_using_clue(request):
+    request.GET['last_']
