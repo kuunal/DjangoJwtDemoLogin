@@ -7,8 +7,9 @@ export default function Page(props) {
       <Pagination
         color="primary"
         count={props.totalPage}
-        siblingCount={0}
-        boundaryCount={2}
+        // siblingCount={0}
+          // boundaryCount={2}
+        page={Number(props.page)}
         onChange={props.handleChange}
       />
     </div>
