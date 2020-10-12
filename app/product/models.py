@@ -2,30 +2,40 @@ from django.db import models, connection
 import math
 
 
+def get_query_and_params(func):
+    def wrapper(page, last_item_info=None, sortby="id", PAGINATOR_ITEMS=8):
+        allowed_values = ['id', 'price', 'author',
+                          'title', 'quantity', 'price']
+        if sortby and (sortby in allowed_values):
+            if last_item_info:
+                query = f'select SQL_CALC_FOUND_ROWS id, author, title, image, quantity, price, description from product where {sortby} > %s order by {sortby} limit %s'
+                params = (last_item_info, PAGINATOR_ITEMS)
+                return func(page, sortby, last_item_info, query, params, PAGINATOR_ITEMS)
+            print("Finallyyyyyyyyyyyyyyyyy")
+            return func(page, sortby, PAGINATOR_ITEMS)
+    return wrapper
+
+
 class ProductManager():
+
     @staticmethod
-    def all(page, sortby):
-        PAGINATOR_ITEMS = 8
+    @get_query_and_params
+    def all(page, sortby, last_item_info=None, query="", params="", PAGINATOR_ITEMS=8):
+        query = query if query else f'select id, author, title, image, quantity, price, description from product order by {sortby} limit %s,%s;'
+        params = params if params else (
+            (int(page)*PAGINATOR_ITEMS)-PAGINATOR_ITEMS, PAGINATOR_ITEMS)
         try:
             cursor = connection.cursor()
-            cursor.execute(
-                f'select SQL_CALC_FOUND_ROWS id, author, title, image, quantity, price, description from product order by {sortby} limit %s,%s;', ((int(page)*PAGINATOR_ITEMS)-PAGINATOR_ITEMS, PAGINATOR_ITEMS))
+            cursor.execute(query, params)
             rows = cursor.fetchall()
-            cursor.execute("select found_rows()")
-            total_products = cursor.fetchone()
             objects = []
             if rows:
                 for row in rows:
                     product_object = Product()
-                    product_object.id = row[0]
-                    product_object.author = row[1]
-                    product_object.title = row[2]
-                    product_object.image = row[3]
-                    product_object.quantity = row[4]
-                    product_object.price = row[5]
-                    product_object.description = row[6]
+                    [product_object.id, product_object.author, product_object.title, product_object.image,
+                        product_object.quantity, product_object.price, product_object.description] = row
                     objects.append(product_object)
-            return objects, total_products
+            return objects
         finally:
             cursor.close()
 
