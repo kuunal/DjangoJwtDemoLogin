@@ -37,15 +37,15 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Item(props) {
   const classes = useStyles();
-  const [expanded, setExpanded] = React.useState(false);
-  const { title, author, image, price, quantity, description } = props.item;
+  const { id, title, author, image, price, quantity, description } = props.item;
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+  const handleClick = (e) =>{
+    console.log("clicked", id);
+  }
 
   return (
     <Card>
+      {/* {console.log(props, props.id)} */}
       <CardHeader
         style={{ textAlign: "left" }}
         avatar={<Avatar className={classes.avatar}>{author[0]}</Avatar>}
@@ -89,7 +89,7 @@ export default function Item(props) {
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
-        <IconButton aria-label="cart">
+        <IconButton aria-label="cart" onClick={()=>handleClick(id)} >
           <ShoppingCartIcon />
         </IconButton>
         <Button variant="contained">Order</Button>
