@@ -11,6 +11,8 @@ import jwt
 import math
 from login.views import custom_token_refresh_view
 from app import settings
+from app.db import execute_sql
+from django.db import connection
 # Create your views here.
 
 
@@ -18,6 +20,7 @@ def caching(func):
     def wrapper(request, *args, **kwargs):
         redis_instance = get_redis_instance()
         page = request.GET['pageno']
+        sortby = request.GET.get('sortby', "id")
         products = redis_instance.get(page)
         if products:
             products = pickle.loads(products)
@@ -27,7 +30,7 @@ def caching(func):
             response = func(request, *args, **kwargs)
             if response.status_code == 200:
                 products = pickle.dumps(response.data)
-                redis_instance.set(page, products)
+                redis_instance.set(sortby, products)
             return response
     return wrapper
 
@@ -50,31 +53,17 @@ def authenticate(func):
 def get_products(request):
     try:
         page = request.GET['pageno']
-        try:
-            sortby = request.GET['sortby']
-        except KeyError:
-            sortby = "id"
-        [products, total_products] = Product.objects.all(page, sortby)
-        total_page = math.ceil(total_products[0]/8)
+        last_item_info = request.GET.get('last_item_info', None)
+        sortby = request.GET.get('sortby', "id")
+        pagination_item_count = int(request.GET.get("itemCount", 8))
+        products = Product.objects.all(
+            page,  last_item_info=last_item_info, sortby=sortby, PAGINATOR_ITEMS=pagination_item_count)
         if products:
             serializer = ProductSerializer(products, many=True)
-            response = getPaginationResponse(
-                serializer.data, total_page, page, total_products)
-            return Response(response, status=200)
+            total_product = execute_sql(
+                'select max(id) from product order by id desc limit 1;', many=False)
+            total_page = math.ceil(total_product/pagination_item_count)
+            return Response({"products": serializer.data, 'total_products': total_product, 'total_page': total_page}, status=200)
         return Response(status=404)
     except KeyError:
         return Response(status=404)
-
-
-def getPaginationResponse(products, total_page, current_page, total_products, start_page=1):
-    next_page = ""
-    prev_page = ""
-    if int(current_page) < total_page:
-        next_page = f'{settings.PRODUCT_API}{str(int(current_page)+1)}'
-    if int(current_page) > start_page:
-        prev_page = settings.PRODUCT_API+str(int(current_page)-1)
-    return {"products": products, "next_page": next_page.replace(" ", ""), "prev_page": prev_page.replace(" ", ""), "total_page": total_page, "total_products": total_products}
-
-
-def paginate_using_clue(request):
-    request.GET['last_']
