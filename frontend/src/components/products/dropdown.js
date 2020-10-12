@@ -1,8 +1,9 @@
 import React from 'react'
 
-export default function Dropdown({clickHandler}) {
+export default function Dropdown({clickHandler, dropDownValue}) {
     return (
-            <select onClick={clickHandler}>
+            <select onChange={clickHandler} value={dropDownValue}>
+                {console.log(dropDownValue)}
                 <option value="id">Relevance</option>
                 <option value="price">Price</option>
                 <option value="author">Author</option>
