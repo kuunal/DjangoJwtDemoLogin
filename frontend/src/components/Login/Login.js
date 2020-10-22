@@ -91,7 +91,7 @@ function LoginComponent(props) {
   // If login successful redirect else show error message
   const verifyLogin = () => {
     if (props.statusCode === 200) {
-      return <Redirect to="products/" />;
+      return <Redirect to="/products/" />;
     } else if (props.statusCode === 401) {
       return (
         <Alert variant="filled" severity="error">
@@ -106,13 +106,14 @@ function LoginComponent(props) {
   };
 
   return (
+    <>
+    {verifyLogin()}
     <form
       id="LoginForm"
       method="POST"
       onSubmit={formSubmit}
       style={loginFormStyle}
     >
-      {verifyLogin()}
       <div style={loginContainer}>
         <h1 style={{ marginBottom: "1.5em" }}>Login page</h1>
         <label for="email" style={{ marginRight: "12px" }}>
@@ -168,6 +169,7 @@ function LoginComponent(props) {
         <br />
       </div>
     </form>
+    </>
   );
 }
 
