@@ -13,6 +13,7 @@ from login.views import custom_token_refresh_view
 from app import settings
 from app.db import execute_sql
 from django.db import connection
+from app.es import es
 # Create your views here.
 
 
@@ -67,3 +68,17 @@ def get_products(request):
         return Response(status=404)
     except KeyError:
         return Response(status=404)
+
+
+@api_view(("GET",))
+def type_ahead_search(request):
+    value = request.GET['query']
+    body = {
+        "query": {
+            "match_phrase_prefix": {
+                "title": value
+            }
+        }
+    }
+    res = es.search(body, "bookstore")
+    return Response(res['hits']['hits'])
