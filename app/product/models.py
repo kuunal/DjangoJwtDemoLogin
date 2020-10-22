@@ -11,7 +11,6 @@ def get_query_and_params(func):
                 query = f'select SQL_CALC_FOUND_ROWS id, author, title, image, quantity, price, description from product where {sortby} > %s order by {sortby} limit %s'
                 params = (last_item_info, PAGINATOR_ITEMS)
                 return func(page, sortby, last_item_info, query, params, PAGINATOR_ITEMS)
-            print("Finallyyyyyyyyyyyyyyyyy")
             return func(page, sortby, PAGINATOR_ITEMS)
     return wrapper
 
