@@ -9,7 +9,7 @@ def refresh_token_required(func):
     def wrapper(request, user=None, *args, **kwargs):
         token = request.COOKIES.get('refresh-token')
         if not token:
-            raise LoginError(**get_response_code('TOKEN_NOT_FOUND'))
+            raise LoginError(**get_response_code('LOGIN_REQUIRED'))
         print(token)
         try:
             cursor = cn.cursor()
@@ -18,14 +18,19 @@ def refresh_token_required(func):
             token_type = payload.get('token_type')
             if token_type != "refresh":
                 raise LoginError(**get_response_code('INVALID_TOKEN'))
-            user_count = cursor.execute(
+            cursor.execute(
+
                 'select exists(select id from login_loginmodel where user_id_id = %s)', (user_id,))
-            if not user_count:
+            user_count = cursor.fetchone()[0]
+            print(user_count)
+            if user_count == 0:
                 raise LoginError(**get_response_code('LOGIN_REQUIRED'))
             return func(request, user=user_id, *args, **kwargs)
         except jwt.DecodeError:
             raise LoginError(**get_response_code('INVALID_TOKEN'))
         except jwt.ExpiredSignatureError:
+            cursor.execute(
+                "delete from login_loginmodel where refresh_token = %s", (token))
             raise LoginError(**get_response_code('TOKEN_EXPIRED'))
         finally:
             cursor.close()
