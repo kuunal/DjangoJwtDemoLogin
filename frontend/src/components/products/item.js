@@ -51,7 +51,7 @@ export default function Item(props) {
         avatar={<Avatar className={classes.avatar}>{author[0]}</Avatar>}
         title={
           <Typography style={{ fontSize: "12px" }}>
-            {title.slice(0, 20)}
+            {title.slice(0, 18)}
           </Typography>
         }
         subheader={
