@@ -78,7 +78,7 @@ function ProductsComponent({ loginToken, newAccessToken, statusCode, requestToke
   const isLoggedIn = () =>{
 
     if (statusCode === 401){
-      return <Redirect to="login/" />
+      return <Redirect to="/login/" />
     }
   }
 
