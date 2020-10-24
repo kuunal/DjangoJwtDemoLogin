@@ -14,7 +14,17 @@ from app import settings
 from app.db import execute_sql
 from django.db import connection
 from app.es import es
+import asyncio
+from asgiref.sync import sync_to_async
 # Create your views here.
+from elasticsearch import AsyncElasticsearch
+
+
+@sync_to_async
+def add_to_cache(redis_instance, response, sortby, page):
+    if response.status_code == 200:
+        products = pickle.dumps(response.data)
+        redis_instance.set(sortby, products)
 
 
 def caching(func):
@@ -23,15 +33,13 @@ def caching(func):
         page = request.GET['pageno']
         sortby = request.GET.get('sortby', "id")
         products = redis_instance.get(page)
-        if products:
+        if products and page == 1:
             products = pickle.loads(products)
             serializer = ProductSerializer(products, many=True)
             return Response(serializer.data)
         else:
             response = func(request, *args, **kwargs)
-            if response.status_code == 200:
-                products = pickle.dumps(response.data)
-                redis_instance.set(sortby, products)
+            asyncio.run(add_to_cache(redis_instance, response, sortby, page))
             return response
     return wrapper
 
@@ -50,15 +58,16 @@ def authenticate(func):
 
 @api_view(('GET',))
 @authenticate
-# @caching
+@caching
 def get_products(request):
     try:
         page = request.GET['pageno']
         last_item_info = request.GET.get('last_item_info', None)
         sortby = request.GET.get('sortby', "id")
         pagination_item_count = int(request.GET.get("itemCount", 8))
-        products = Product.objects.all(
-            page,  last_item_info=last_item_info, sortby=sortby, PAGINATOR_ITEMS=pagination_item_count)
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        products = asyncio.run(Product.objects.all(
+            page,  last_item_info=last_item_info, sortby=sortby, PAGINATOR_ITEMS=pagination_item_count))
         if products:
             serializer = ProductSerializer(products, many=True)
             total_product = execute_sql(
@@ -72,13 +81,18 @@ def get_products(request):
 
 @api_view(("GET",))
 def type_ahead_search(request):
-    value = request.GET['query']
-    body = {
-        "query": {
-            "match_phrase_prefix": {
-                "title": value
+    try:
+        es = AsyncElasticsearch()
+        value = request.GET['query']
+        body = {
+            "query": {
+                "match_phrase_prefix": {
+                    "title": value
+                }
             }
         }
-    }
-    res = es.search(body, "bookstore")
-    return Response(res['hits']['hits'])
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        res = asyncio.run(es.search(body, "bookstore"))
+        return Response(res['hits']['hits'])
+    finally:
+        asyncio.run(es.close())
