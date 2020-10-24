@@ -13,16 +13,11 @@ import axios from "axios";
 export default function Headers() {
   const theme = useTheme();
   const isXSWidth = useMediaQuery(theme.breakpoints.down("xs"));
-  const [ searchResult , setSearchResult] = useState([]) 
 
   const logoStyle = {
     marginLeft: isXSWidth ? "-20px" : "-50px",
   };
 
-  const handleChange = (e) => {
-    axios.get(process.env.REACT_APP_BACKENDURI+"products/search",{params:{"query":e.target.value}})
-    .then(res=>setSearchResult([...res.data])).catch(err=>console.log(err.response))  
-  }
 
   return (
     <AppBar position="static" color="secondary" >
@@ -39,7 +34,7 @@ export default function Headers() {
               <Logo />
             </Grid>
             <Grid item lg={6}>
-              <SearchBar handleChange = {handleChange} searchResult = {searchResult}/>
+              <SearchBar />
             </Grid>
           </Grid>
           <Grid item container style={{ width: "20%" }} justify="flex-start">
