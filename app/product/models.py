@@ -1,7 +1,9 @@
 from django.db import models, connection
 import math
+from asgiref.sync import sync_to_async
 
 
+# @sync_to_async
 def get_query_and_params(func):
     def wrapper(page, last_item_info=None, sortby="id", PAGINATOR_ITEMS=8):
         allowed_values = ['id', 'price', 'author',
@@ -19,6 +21,7 @@ class ProductManager():
 
     @staticmethod
     @get_query_and_params
+    @sync_to_async
     def all(page, sortby, last_item_info=None, query="", params="", PAGINATOR_ITEMS=8):
         query = query if query else f'select id, author, title, image, quantity, price, description from product order by {sortby} limit %s,%s;'
         params = params if params else (
