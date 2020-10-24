@@ -30,7 +30,7 @@ def refresh_token_required(func):
             raise LoginError(**get_response_code('INVALID_TOKEN'))
         except jwt.ExpiredSignatureError:
             cursor.execute(
-                "delete from login_loginmodel where refresh_token = %s", (token))
+                "delete from login_loginmodel where refresh_token = %s", (token,))
             raise LoginError(**get_response_code('TOKEN_EXPIRED'))
         finally:
             cursor.close()
